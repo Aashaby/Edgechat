@@ -1,0 +1,12 @@
+/* Hallmark · pre-emit critique: P5 H5 E5 S5 R5 V4
+ * genre: modern-minimal · macrostructure: Workbench · theme: studied-DNA (Halo admin reference)
+ * contrast: pass · tokens: pass · responsive: pass · designed-as-app
+ */
+
+@import './admin/tokens.css';
+@import './admin/layout.css';
+@import './admin/content.css';
+@import './admin/controls.css';
+@import './admin/tables.css';
+@import './admin/storage.css';
+@import './admin/user-ban-dialog.css';

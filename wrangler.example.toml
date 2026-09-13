@@ -1,0 +1,77 @@
+# Legacy Worker service name kept to avoid creating a new production Worker during rename cleanup.
+name = "cfchat"
+main = "worker/src/index.js"
+compatibility_date = "2026-04-05"
+compatibility_flags = ["nodejs_compat"]
+
+[build]
+command = "npm run schema:generate"
+
+[vars]
+ADMIN_USERNAMES = "admin"
+MESSAGE_RETENTION_DAYS = "7"
+SOFT_DELETE_RETENTION_DAYS = "60"
+GC_BATCH_SIZE = "90"
+GC_MAX_BATCHES_PER_RUN = "20"
+# 单次调用的 D1/storage 内部操作合计保留 100 次平台余量；失败写回也计入同一预算。
+GC_INTERNAL_OPERATION_BUDGET = "900"
+GC_D1_STATEMENT_BUDGET = "1200"
+GC_STORAGE_OPERATION_BUDGET = "300"
+TELEGRAM_STORAGE_CHAT_ID = ""
+# Leave this at the official Telegram API for direct mode, or set it to the EdgeChat Telegram Proxy.
+TELEGRAM_STORAGE_API_BASE_URL = "https://api.telegram.org"
+# Optional public HTTPS endpoint of a Telegram Local Bot API Server.
+# Files larger than TELEGRAM_STORAGE_CLOUD_SAFE_FILE_BYTES automatically use this backend.
+TELEGRAM_STORAGE_LOCAL_API_BASE_URL = ""
+TELEGRAM_STORAGE_LOCAL_MAX_FILE_BYTES = "0"
+TELEGRAM_STORAGE_CLOUD_SAFE_FILE_BYTES = "19726336"
+# Same plaintext uploaded by the same owner reuses the existing encrypted Telegram object.
+TELEGRAM_STORAGE_DEDUP = "true"
+# ImgBed-style resumable uploads: files above 12 MiB are split into authenticated 8 MiB Telegram objects.
+TELEGRAM_STORAGE_CHUNKED_UPLOADS = "true"
+# 逗号分隔的本站 origin，用于识别升级前保存的完整 /files/ 图标 URL；自定义域名应全部列出。
+SITE_ORIGINS = ""
+STORAGE_DELETE_MAX_RETRY = "8"
+ORPHAN_UPLOAD_RETENTION_DAYS = "1"
+ALLOWED_FILE_TYPES = "image/,video/,audio/,application/pdf,text/"
+MAX_FILE_SIZE = "2147483648"
+
+[[d1_databases]]
+binding = "DB"
+# Legacy D1 resource name kept intentionally; do not rename without a data migration plan.
+database_name = "cfchat-db"
+database_id = "f7dbc360-1c0f-47d1-9ed8-9b285e8f98e9"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "247164d96a42467386421a72eb9a269e"
+
+
+[[durable_objects.bindings]]
+name = "CHANNEL_ROOM"
+class_name = "ChannelRoom"
+
+[[durable_objects.bindings]]
+name = "SCHEDULER"
+class_name = "Scheduler"
+
+[[durable_objects.bindings]]
+name = "USER_INBOX"
+class_name = "UserInbox"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["ChannelRoom", "Scheduler"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["UserInbox"]
+
+[assets]
+directory = "./frontend/dist"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/*", "/files/*"]
+
+[triggers]
+# Cloudflare Cron 按 UTC 执行；19:00 UTC = 北京时间每天 03:00
+crons = ["0 19 * * *"]

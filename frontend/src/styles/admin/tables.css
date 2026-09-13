@@ -1,0 +1,42 @@
+.admin-page .admin-table-wrap {
+  min-width: 0;
+  overflow: auto;
+  border: 1px solid var(--admin-border);
+  border-radius: var(--admin-radius-control);
+}
+
+.admin-page .list-table {
+  width: 100%;
+  min-width: 40rem;
+  border-collapse: collapse;
+  color: var(--admin-text);
+  font-size: 0.78rem;
+}
+
+.admin-page .list-table th,
+.admin-page .list-table td {
+  padding: var(--admin-space-xs) var(--admin-space-sm);
+  border-block-end: 1px solid var(--admin-border);
+  text-align: start;
+  vertical-align: middle;
+}
+
+.admin-page .list-table th {
+  background: var(--admin-subtle);
+  color: var(--admin-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.admin-page .list-table tr:last-child td {
+  border-block-end: 0;
+}
+
+.admin-page .list-table tbody tr:hover {
+  background: var(--admin-subtle);
+}
+
+.admin-page .list-table td strong {
+  color: var(--admin-text);
+}
